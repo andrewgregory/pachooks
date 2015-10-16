@@ -9,6 +9,14 @@ before or after transactions.  These hooks and accompanying scripts are
 intended to showcase the power and flexibility of this feature as well as serve
 as examples for how to write hooks.
 
+=head1 DESCRIPTION
+
+=over
+
+=item check-boot - check that /boot is mounted before trying to modify it
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2015 Andrew Gregory <andrew.gregory.8@gmail.com>

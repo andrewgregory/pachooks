@@ -1,0 +1,13 @@
+# Verify that /boot is mounted before trying to modify it
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = File
+Target = boot/*
+
+[Action]
+When = PreTransaction
+Exec = /bin/sh -c 'findmnt /boot &>/dev/null || ( printf "error: /boot not mounted\n"; exit 1 )'
+AbortOnFail
