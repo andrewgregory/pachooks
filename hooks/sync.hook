@@ -1,0 +1,14 @@
+# sync storage caches to reduce the risk of file system corruption
+# NOTE: will not run if the transaction is interrupted for any reason
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Depends = coreutils
+When = PostTransaction
+Exec = /bin/sync

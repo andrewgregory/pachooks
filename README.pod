@@ -15,6 +15,8 @@ as examples for how to write hooks.
 
 =item check-boot - check that /boot is mounted before trying to modify it
 
+=item sync - sync storage caches to reduce the risk of file system corruption
+
 =back
 
 =head1 COPYRIGHT AND LICENSE
