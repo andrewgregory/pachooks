@@ -1,0 +1,22 @@
+#!/bin/bash
+
+when="$1"
+
+configfile="/etc/pachooks/snapshot-btrfs"
+
+subvolumes=()
+
+if ! [ -f "$configfile" ]; then
+    printf "error: missing configuration file '%s'\n" "$configfile"
+    exit 1
+fi
+
+label="alpm-$when:$(date "+%Y-%m-%d_%H:%M:%S")"
+ret=0
+for source in "${subvolumes[@]}"; do
+    if ! btrfs subvolume snapshot "$source" "$source:$label"; then
+        printf "error: could not take a snapshot of '%s'\n" "$source"
+        ret=1
+    fi
+done
+exit $ret
