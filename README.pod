@@ -8,6 +8,8 @@ pachooks - sample hooks for libalpm/pacman
 
 =item check-boot - check that /boot is mounted before trying to modify it
 
+=item check-mount - check that necessary devices are mounted
+
 =item check-suid - print post-install warnings for suid/getcap binaries
 
 =item fc-cache - rebuild system font information cache
