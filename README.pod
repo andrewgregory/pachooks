@@ -18,6 +18,8 @@ pachooks - sample hooks for libalpm/pacman
 
 =item mkfontscale-otf, mkfontscale-ttf - update X11 font name files
 
+=item snapshot-pre-btrfs, snapshot-post-btrfs - take btrfs snapshots
+
 =item snapshot-pre-snapper, snapshot-post-snapper - take filesystem snapshots
 
 =item sync - sync storage caches to reduce the risk of file system corruption
