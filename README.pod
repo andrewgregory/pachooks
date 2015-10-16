@@ -15,6 +15,8 @@ as examples for how to write hooks.
 
 =item check-boot - check that /boot is mounted before trying to modify it
 
+=item check-suid - print post-install warnings for suid/getcap binaries
+
 =item sync - sync storage caches to reduce the risk of file system corruption
 
 =back
