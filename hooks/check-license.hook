@@ -1,0 +1,13 @@
+# print a warning if an installed package has an inappropriate license
+
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+When = PostTransaction
+Depends = expac
+Exec = /usr/share/alpm/hooks.bin/check-license
+NeedsTargets
