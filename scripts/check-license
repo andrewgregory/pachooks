@@ -1,0 +1,22 @@
+#!/bin/bash
+
+configfile="/etc/pachooks/license-check"
+
+if ! [ -f "$configfile" ]; then
+    printf "error: missing configuration file '%s'\n" "$configfile"
+    exit 1
+fi
+
+declare -A allowed
+while read -r license; do
+    allowed["$license"]=1
+done < "$configfile"
+
+while read -r pkgname; do
+    while read -r license; do
+        if [[ -z ${allowed["$license"]} ]]; then
+            printf "warning: installed '%s' with restricted license '%s'\n" \
+                "$pkgname" "$license"
+        fi
+    done < <(expac --listdelim=$'\n' '%L' "$pkgname")
+done
