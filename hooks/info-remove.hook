@@ -1,0 +1,10 @@
+[Trigger]
+Type = File
+Operation = Remove
+Target = usr/share/info/*
+Target = !usr/share/info/dir
+
+[Action]
+When = PostTransaction
+Exec = /bin/sh -c 'while read -r f; do install-info --delete "$f" /usr/share/info/dir 2> /dev/null; done'
+NeedsTargetList

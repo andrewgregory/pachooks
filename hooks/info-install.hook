@@ -1,0 +1,11 @@
+[Trigger]
+Type = File
+Operation = Install
+Operation = Upgrade
+Target = usr/share/info/*
+Target = !usr/share/info/dir
+
+[Action]
+When = PostTransaction
+Exec = /bin/sh -c 'while read -r f; do install-info "$f" /usr/share/info/dir 2> /dev/null; done'
+NeedsTargetList
