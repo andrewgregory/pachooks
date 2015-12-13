@@ -17,6 +17,8 @@ as examples for how to write hooks.
 
 =item check-suid - print post-install warnings for suid/getcap binaries
 
+=item snapshot-pre-snapper, snapshot-post-snapper - take filesystem snapshots
+
 =item sync - sync storage caches to reduce the risk of file system corruption
 
 =back

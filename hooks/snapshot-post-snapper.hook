@@ -1,0 +1,10 @@
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = *
+
+[Action]
+When = PostInstall
+Exec = /usr/share/alpm/hooks.bin/snapshot-snapper post

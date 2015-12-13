@@ -1,0 +1,11 @@
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = *
+
+[Action]
+When = PreInstall
+Exec = /usr/share/alpm/hooks.bin/snapshot-snapper pre
+AbortOnFail

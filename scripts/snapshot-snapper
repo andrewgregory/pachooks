@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+suffix="$1"
+
+configs=('root')
+
+configfile='/etc/pachooks/snapshot-snapper'
+[ -f  "$configfile" ] && source "$configfile"
+
+for config in "${configs[@]}"; do
+    /bin/snapper --config="$config" create --type=single --description=alpm-"$suffix"
+done
