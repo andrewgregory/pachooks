@@ -27,6 +27,16 @@ as examples for how to write hooks.
 
 =back
 
+=head1 FILES
+
+=over
+
+=item F</usr/share/alpm/hooks.bin/> - executables to be used by hooks
+
+=item F</usr/share/alpm/hooks.local/> - hooks users can choose to enable
+
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 Copyright 2015 Andrew Gregory <andrew.gregory.8@gmail.com>
