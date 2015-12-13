@@ -27,6 +27,18 @@ as examples for how to write hooks.
 
 =back
 
+=head1 HOOKS vs INSTALL SCRIPTS
+
+Hooks and scripts each fill a different packaging niche.  Install scripts are
+included directly in the package that runs them and are run immediately prior
+to installation or removal of the package.  Hooks may be provided by any
+package, not necessarily the one(s) that trigger it, or the user and are run
+before or after the transaction.  Hooks are generally preferable for any tasks
+that need to be repeated for a number of packages.  Any essential tasks (e.g.
+rebuilding the initramfs after a kernel update) should continue to use an
+install script due to the risk of post-transaction hooks not running if the
+transaction is interrupted.
+
 =head1 FILES
 
 =over
