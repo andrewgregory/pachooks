@@ -23,6 +23,8 @@ as examples for how to write hooks.
 
 =item sync - sync storage caches to reduce the risk of file system corruption
 
+=item update-desktop-database - update cache databse for F<.desktop> files
+
 =back
 
 =head1 COPYRIGHT AND LICENSE
