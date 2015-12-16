@@ -2,13 +2,6 @@
 
 pachooks - sample hooks for libalpm/pacman
 
-=head1 SYNOPSIS
-
-As of version 5.0 pacman's libalpm has support for user-provided hooks to run
-before or after transactions.  These hooks and accompanying scripts are
-intended to showcase the power and flexibility of this feature as well as serve
-as examples for how to write hooks.
-
 =head1 DESCRIPTION
 
 =over
