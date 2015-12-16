@@ -38,7 +38,7 @@ of post-transaction hooks not running if the transaction is interrupted.
 
 =item F</usr/share/alpm/hooks.bin/> - executables to be used by hooks
 
-=item F</usr/share/alpm/hooks.local/> - hooks users can choose to enable
+=item F</usr/share/alpm/hooks.local/> - inactive hooks for users to enable
 
 =back
 
