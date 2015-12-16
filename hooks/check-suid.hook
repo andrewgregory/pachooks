@@ -10,4 +10,4 @@ Target = usr/sbin/*
 [Action]
 When = PostTransaction
 Exec = /usr/share/alpm/hooks.bin/check-suid
-NeedsFileList
+NeedsTargets
