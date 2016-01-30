@@ -7,4 +7,4 @@ Target = usr/share/fonts/TTF/*
 
 [Action]
 When = PostTransaction
-Exec = /bin/sh -c '/bin/mkfontscale /usr/share/fonts/TTF && /bin/mkfontdir /usr/share/fonts/TTF'
+Exec = /bin/mkfontscale /usr/share/fonts/TTF
