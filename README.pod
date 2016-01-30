@@ -24,6 +24,8 @@ pachooks - sample hooks for libalpm/pacman
 
 =item update-desktop-database - update cache databse for F<.desktop> files
 
+=item update-mime-database - update shared MIME info database
+
 =back
 
 =head1 HOOKS vs INSTALL SCRIPTS
