@@ -3,8 +3,8 @@ Type = File
 Operation = Install
 Operation = Upgrade
 Operation = Remove
-Target = usr/share/fonts/OTF/*
+Target = usr/share/fonts/TTF/*
 
 [Action]
 When = PostTransaction
-Exec = /bin/mkfontscale /usr/share/fonts/OTF
+Exec = /bin/mkfontdir /usr/share/fonts/TTF

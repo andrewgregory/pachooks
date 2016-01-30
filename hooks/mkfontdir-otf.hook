@@ -7,4 +7,4 @@ Target = usr/share/fonts/OTF/*
 
 [Action]
 When = PostTransaction
-Exec = /bin/mkfontscale /usr/share/fonts/OTF
+Exec = /bin/mkfontdir /usr/share/fonts/OTF
