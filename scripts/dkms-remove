@@ -1,0 +1,7 @@
+#!/bin/bash
+
+while read -r path; do
+  for module in /usr/src/*; do
+    dkms remove "$(basename "$module" | sed 's|-|/|')" -k "$(basename "$path")"
+  done
+done
