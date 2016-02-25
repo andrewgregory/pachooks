@@ -6,5 +6,6 @@ Operation = Remove
 Target = usr/share/fonts/*
 
 [Action]
+Description = Updating font cache...
 When = PostTransaction
 Exec = /bin/fc-cache --system-only --force

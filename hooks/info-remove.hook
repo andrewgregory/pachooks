@@ -5,6 +5,7 @@ Target = usr/share/info/*
 Target = !usr/share/info/dir
 
 [Action]
+Description = Removing stale info/dir entries...
 When = PostTransaction
 Exec = /bin/sh -c 'while read -r f; do install-info --delete "$f" /usr/share/info/dir 2> /dev/null; done'
 NeedsTargets

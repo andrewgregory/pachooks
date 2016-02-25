@@ -8,6 +8,7 @@ Target = usr/bin/*
 Target = usr/sbin/*
 
 [Action]
+Description = Checking for potentially-dangerous suid executables...
 When = PostTransaction
 Exec = /usr/share/alpm/hooks.bin/check-suid
 NeedsTargets

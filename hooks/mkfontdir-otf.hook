@@ -6,5 +6,6 @@ Operation = Remove
 Target = usr/share/fonts/OTF/*
 
 [Action]
+Description = Indexing OTF fonts...
 When = PostTransaction
 Exec = /bin/mkfontdir /usr/share/fonts/OTF

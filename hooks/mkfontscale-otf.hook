@@ -6,5 +6,6 @@ Operation = Remove
 Target = usr/share/fonts/OTF/*
 
 [Action]
+Description = Indexing scalable TTF fonts...
 When = PostTransaction
 Exec = /bin/mkfontscale /usr/share/fonts/OTF

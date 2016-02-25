@@ -6,5 +6,6 @@ Operation = Remove
 Target = usr/share/fonts/TTF/*
 
 [Action]
+Description = Indexing TTF fonts...
 When = PostTransaction
 Exec = /bin/mkfontdir /usr/share/fonts/TTF
