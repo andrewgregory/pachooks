@@ -1,0 +1,13 @@
+[Trigger]
+Type = File
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Target = usr/share/icons/*/
+Target = !usr/share/icons/*/*/
+
+[Action]
+Description = Updating gtk icon cache...
+When = PostTransaction
+Exec = /bin/bash -c 'while read line; do gtk-update-icon-cache -q -t -f $line; done'
+NeedsTargets
