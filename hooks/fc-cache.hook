@@ -7,4 +7,4 @@ Target = usr/share/fonts/*
 
 [Action]
 When = PostTransaction
-Exec = /bin/fc-cache --system-only --force
+Exec = /bin/fc-cache --system-only
