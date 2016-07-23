@@ -28,7 +28,19 @@ pachooks - sample hooks for libalpm/pacman
 
 =back
 
-=head1 HOOKS vs INSTALL SCRIPTS
+=head1 FILES
+
+=over
+
+=item F</usr/share/alpm/hooks.bin/> - executables to be used by hooks
+
+=item F</usr/share/alpm/hooks.local/> - inactive hooks for users to enable
+
+=back
+
+=head1 NOTES
+
+=head2 Hooks vs Install Scripts
 
 Hooks and scripts each fill a different packaging niche.  Install scripts are
 included directly in the package that runs them and are run immediately prior
@@ -40,19 +52,26 @@ rebuilding the initramfs after a kernel update) should either be run in
 a C<PreTransaction> hook or continue to use an install script due to the risk
 of post-transaction hooks not running if the transaction is interrupted.
 
-=head1 FILES
+=head2 Running hooks in the background
 
-=over
+Running hooks in the background is generally discouraged; it prevents alpm from
+capturing their output and subsequent hooks cannot be sure previous hooks have
+finished.  For long-running processes that produce no output and only modify
+files/directories that are considered volatile anyway, however, this may be
+acceptable.  In order to run a process in the background, its C<stdin>,
+C<stdout>, and C<stderr> file descriptors must be closed or redirected and it
+must be run inside a forked environment.  Using a POSIX-compatible shell, this
+can be accomplished with:
 
-=item F</usr/share/alpm/hooks.bin/> - executables to be used by hooks
+ Exec = /bin/sh -c '<cmd> <&- >&- 2>&1 &'
 
-=item F</usr/share/alpm/hooks.local/> - inactive hooks for users to enable
+For example:
 
-=back
+ Exec = /bin/sh -c 'mkdir -p /var/cache/man; mandb --quiet <&- >&- 2>&- &'
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2015 Andrew Gregory <andrew.gregory.8@gmail.com>
+Copyright 2015-2016 Andrew Gregory <andrew.gregory.8@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
