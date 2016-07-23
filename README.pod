@@ -74,4 +74,4 @@ SOFTWARE.
 
 =head1 SEE ALSO
 
-L<alpm-hooks(5)>
+L<alpm-hooks(5)|https://www.archlinux.org/pacman/alpm-hooks.5.html>
