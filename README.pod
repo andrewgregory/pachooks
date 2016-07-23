@@ -22,7 +22,7 @@ pachooks - sample hooks for libalpm/pacman
 
 =item sync - sync storage caches to reduce the risk of file system corruption
 
-=item update-desktop-database - update cache databse for F<.desktop> files
+=item update-desktop-database - update cache database for F<.desktop> files
 
 =item update-mime-database - update shared MIME info database
 
