@@ -6,6 +6,6 @@ Operation = Remove
 Target = *
 
 [Action]
-When = PreInstall
+When = PreTransaction
 Exec = /usr/share/alpm/hooks.bin/snapshot-snapper pre
 AbortOnFail
