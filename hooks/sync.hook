@@ -9,6 +9,6 @@ Type = Package
 Target = *
 
 [Action]
-Depends = coreutils
+Description = Force syncing changes to disk...
 When = PostTransaction
 Exec = /bin/sync

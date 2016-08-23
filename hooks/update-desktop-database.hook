@@ -6,5 +6,6 @@ Operation = Remove
 Target = usr/share/applications/*.desktop
 
 [Action]
+Description = Updating desktop database...
 When = PostTransaction
 Exec = /bin/update-desktop-database --quiet

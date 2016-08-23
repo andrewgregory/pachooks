@@ -6,5 +6,6 @@ Operation = Remove
 Target = *
 
 [Action]
+Description = Creating post-transaction system snapshot...
 When = PostInstall
 Exec = /usr/share/alpm/hooks.bin/snapshot-snapper post
