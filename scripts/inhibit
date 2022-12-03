@@ -1,0 +1,193 @@
+#!/usr/bin/tcc -run -I/usr/include/dbus-1.0 -I/usr/lib/dbus-1.0/include -ldbus-1
+
+/* this is more-or-less the opposite of systemd-inhibit; instead of spawning a
+ * child and inhibiting until it finishes, this inhibits until its parent
+ * terminates */
+
+/*
+ * Copyright 2022 Andrew Gregory <andrew.gregory.8@gmail.com>
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to
+ * deal in the Software without restriction, including without limitation the
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+
+#include <errno.h>
+#include <poll.h>
+#include <signal.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/syscall.h>
+#include <unistd.h>
+
+#include <dbus/dbus.h>
+
+#define ERROR(...) fprintf(stderr, "error: " __VA_ARGS__)
+
+int inhibit(void) {
+    int fd;
+    DBusError error;
+    DBusConnection *conn;
+    DBusMessage *request, *reply;
+    DBusMessageIter args;
+
+    char *what = "shutdown";
+    char *who = "alpm-inhibit";
+    char *why = "package transaction in progress";
+    char *how = "block";
+
+    dbus_error_init(&error);
+
+    conn = dbus_bus_get(DBUS_BUS_SYSTEM, &error);
+    if(dbus_error_is_set(&error)) {
+        ERROR("dbus_bus_get: %s\n", error.message);
+        dbus_error_free(&error);
+        return -1;
+    }
+    if(conn == NULL) {
+        ERROR("dbus_bus_get: unknown error\n");
+        return -1;
+    }
+
+    request = dbus_message_new_method_call(
+            "org.freedesktop.login1",
+            "/org/freedesktop/login1",
+            "org.freedesktop.login1.Manager",
+            "Inhibit");
+    if(request == NULL) {
+        ERROR("dbus_message_new_method_call: out of memory\n");
+        return -1;
+    }
+
+    dbus_message_iter_init_append(request, &args);
+    if(!(
+           dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &what)
+        && dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &who)
+        && dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &why)
+        && dbus_message_iter_append_basic(&args, DBUS_TYPE_STRING, &how)
+    )) {
+        ERROR("unable to construct dbus request (%s)\n", strerror(ENOMEM));
+        return -1;
+    }
+
+    reply = dbus_connection_send_with_reply_and_block(
+            conn, request, DBUS_TIMEOUT_INFINITE, &error);
+    if(dbus_error_is_set(&error)) {
+        ERROR("dbus request failed (%s)\n", error.message);
+        dbus_error_free(&error);
+        return -1;
+    }
+
+    dbus_message_get_args(reply, &error, DBUS_TYPE_UNIX_FD, &fd, DBUS_TYPE_INVALID);
+    if(dbus_error_is_set(&error)) {
+        ERROR("failed to read file descriptor from dbus reply (%s)\n",
+                error.message);
+        dbus_error_free(&error);
+        return -1;
+    }
+
+    dbus_message_unref(request);
+    dbus_message_unref(reply);
+
+    return fd;
+}
+
+/* close(2) wrapper that retries on EINTR and considers EBADF success */
+int xclose(int fd) {
+    int ret;
+    while((ret = close(fd)) == -1 && errno == EINTR);
+    return ret == EBADF ? 0 : ret;
+}
+
+int main(void) {
+    sigset_t sset;
+    pid_t alpm_pid;
+
+    sigemptyset(&sset);
+    sigaddset(&sset, SIGUSR1);
+    sigaddset(&sset, SIGCHLD);
+    sigprocmask(SIG_BLOCK, &sset, NULL);
+
+    if((alpm_pid = getppid()) == 1) {
+        /* parent is init, something killed the alpm process already */
+        return 1;
+    }
+    switch(fork()) {
+        case -1:
+            ERROR("fork failed (%s)\n", strerror(errno));
+            return 1;
+        case 0:
+        {
+            /* child process */
+            /* waitX functions only work for child processes, to track the
+             * parent we need pidfd_open + poll */
+            int pid_fd, inhibit_fd;
+            if((pid_fd = syscall(SYS_pidfd_open, alpm_pid, 0)) == -1) {
+                ERROR("unable to open process file descriptor (%s)\n", strerror(errno));
+                return 1;
+            }
+            if((inhibit_fd = inhibit()) == -1) {
+                /* specific error message printed by inhibit() */
+                return 1;
+            }
+
+            /* ensure these are actually closed before polling, otherwise alpm
+             * will never stop trying to read and poll will hang forever.
+             * NOTE: errors after this point cannot be surfaced */
+            if(xclose(STDIN_FILENO) == 0
+                    && xclose(STDOUT_FILENO) == 0
+                    && xclose(STDERR_FILENO) == 0) {
+                struct pollfd fds[1] = {{ .fd = pid_fd, .events = POLLIN }};
+                int ret, hook_pid = getppid();
+                /* if the main main process is still alive, notify it that
+                 * setup succeeded and we're about to start waiting */
+                if(hook_pid != 1) { kill(getppid(), SIGUSR1); }
+                while((ret = poll(fds, 1, -1)) == -1
+                        && (errno == EINTR || errno == EAGAIN));
+                close(pid_fd);
+                close(inhibit_fd);
+                return ret == 0 ? 0 : 1;
+            }
+            ERROR("unable to close alpm file descriptors (%s)\n",
+                    strerror(errno));
+            return 1;
+        }
+        default:
+        {
+            /* parent process */
+            int signum;
+            sigwait(&sset, &signum);
+            switch(signum) {
+                case SIGCHLD:
+                    /* hopefully the child provided a more useful error, but
+                     * give a fallback in case it died after closing output
+                     * streams */
+                    ERROR("unable to set inhibition lock\n");
+                    return 1;
+                case SIGUSR1:
+                    return 0;
+            }
+        }
+    }
+
+     /* shouldn't be able to get here */
+    ERROR("unable to set inhibition lock\n");
+    return 1;
+}
+
+/* vim: set ft=c: */

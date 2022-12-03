@@ -14,6 +14,8 @@ pachooks - sample hooks for libalpm/pacman
 
 =item info-install, info-remove - update info file database
 
+=item inhibit - inhibit shutdown during transactions
+
 =item mkfontscale-otf, mkfontscale-ttf - update X11 scalable font name files
 
 =item mkfontdir-otf, mkfontscale-ttf - update X11 bitmap font name files

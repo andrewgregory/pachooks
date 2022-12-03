@@ -1,0 +1,14 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Inhibiting shutdown during transaction...
+Depends = tcc
+depends = dbus
+When = PreTransaction
+Exec = /usr/share/alpm/hooks.bin/inhibit
+AbortOnFail
