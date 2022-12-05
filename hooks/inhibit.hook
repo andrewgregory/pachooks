@@ -10,5 +10,5 @@ Description = Inhibiting shutdown during transaction...
 Depends = tcc
 Depends = dbus
 When = PreTransaction
-Exec = /usr/share/alpm/hooks.bin/inhibit
+Exec = /usr/share/libalpm/scripts/inhibit
 AbortOnFail
