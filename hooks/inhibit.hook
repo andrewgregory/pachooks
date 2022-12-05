@@ -8,7 +8,7 @@ Target = *
 [Action]
 Description = Inhibiting shutdown during transaction...
 Depends = tcc
-depends = dbus
+Depends = dbus
 When = PreTransaction
 Exec = /usr/share/alpm/hooks.bin/inhibit
 AbortOnFail
