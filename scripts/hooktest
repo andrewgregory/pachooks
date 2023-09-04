@@ -1,0 +1,115 @@
+#!/usr/bin/tcc -run
+
+#include <errno.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <sys/wait.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
+/* try to determine the valid signal number range (1..NSIG-1) */
+#ifndef NSIG
+#ifdef SIGRTMAX
+#define NSIG (SIGRTMAX + 1)
+#else
+#define NSIG 65 // guess
+#endif
+#endif
+
+int verbose = 0;
+
+void set_verbose(void) {
+	const char *v = getenv("VERBOSE");
+	verbose = v && strcmp(v, "0") != 0;
+}
+
+void fail(const char *fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	fputs("    FAIL: ", stdout);
+	vprintf(fmt, args);
+	putchar('\n');
+	va_end(args);
+}
+
+void info(const char *fmt, ...) {
+	if(verbose) {
+		va_list args;
+		va_start(args, fmt);
+		fputs("    INFO: ", stdout);
+		vprintf(fmt, args);
+		putchar('\n');
+		va_end(args);
+	}
+}
+
+int main(int argc, char *argv[]) {
+	set_verbose();
+
+	/***************************
+	 * standard file descriptors are open
+	 ***************************/
+	for(int fd = 0; fd <= 2; ++fd) {
+		if(fcntl(fd, F_GETFD) == 0) {
+			info("fd %d is valid", fd);
+		} else if(errno == EBADF) {
+			fail("fd %d is not valid", fd);
+		} else {
+			info("error checking fd %d: %s", fd, strerror(errno));
+		}
+	}
+
+	/***************************
+	 * environment variables
+	 ***************************/
+	// TODO
+
+	/***************************
+	 * bash does not source .bashrc
+	 ***************************/
+	// write a temporary rcfile
+	char rcpath[] = "rcfile-XXXXXX";
+	char rcfile[] = "exit 17";
+	int  rcfd     = mkstemp(rcpath);
+	write(rcfd, rcfile, strlen(rcfile));
+
+	int cpid = fork();
+	if(cpid == 0) {
+		execl("/bin/bash", "bash", "--rcfile", rcpath, "-c", "exit", (char*)0);
+	} else {
+		int status;
+		waitpid(cpid, &status, 0);
+		unlink(rcpath);
+		if(status >> 8 == 17) {
+			fail("bashrc sourced");
+		} else {
+			info("bashrc not sourced");
+		}
+	}
+
+	/***************************
+	 * signals are set to default handlers
+	 ***************************/
+	for(int i = 0; i < NSIG; ++i) {
+		struct sigaction oact;
+		if(sigaction(i, NULL, &oact) == 0) {
+			if(oact.sa_handler != SIG_DFL) {
+				fail("signal %d not set to default handler", i);
+			} else {
+				info("signal %d set to default handler", i);
+			}
+		} else if(errno != EINVAL) {
+			fail("error retrieving handler for signal %d (%s)",
+					i, strerror(errno));
+		} else {
+			info("error retrieving handler for signal %d (%s)",
+					i, strerror(errno));
+		}
+	}
+
+	return 0;
+}
+
+/* vim: set ft=c: */

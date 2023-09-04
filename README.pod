@@ -12,6 +12,8 @@ pachooks - sample hooks for libalpm/pacman
 
 =item fc-cache - rebuild system font information cache
 
+=item hooktest - test the hook execution environment
+
 =item info-install, info-remove - update info file database
 
 =item inhibit - inhibit shutdown during transactions

@@ -1,0 +1,12 @@
+[Trigger]
+Type = Package
+Target = *
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+
+[Action]
+Description = Testing hook environment...
+Depends = tcc
+When = PostTransaction
+Exec = /usr/share/alpm/hooks.bin/hooktest
