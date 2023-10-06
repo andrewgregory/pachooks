@@ -10,6 +10,10 @@ pachooks - sample hooks for libalpm/pacman
 
 =item check-suid - print post-install warnings for suid/getcap binaries
 
+=item dkms-install - build dkms modules after installing or upgrading a kernel
+
+=item dkms-remove - remove all dkms modules before removing a kernel
+
 =item fc-cache - rebuild system font information cache
 
 =item hooktest - test the hook execution environment
