@@ -30,6 +30,8 @@ pachooks - sample hooks for libalpm/pacman
 
 =item update-mime-database - update shared MIME info database
 
+=item localepurge - reclaim disk space removing unneeded localizations
+
 =back
 
 =head1 FILES

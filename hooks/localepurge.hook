@@ -1,0 +1,17 @@
+# Reclaim disk space removing unneeded localizations
+
+# NOTE: You may want to omit this hook and instead configure the NoExtract
+# option inside pacman.conf if you only intend to keep one or two languages
+# installed. More info here: https://bbs.archlinux.org/viewtopic.php?id=208549
+
+[Trigger]
+Operation = Install
+#Operation = Remove
+Operation = Upgrade
+Target = *
+Type = Package
+
+[Action]
+Depends = localepurge
+Exec = /usr/bin/localepurge
+When = PostTransaction
